@@ -1,3 +1,7 @@
+include Perceptron.asm
+include SimpleParser.asm
+include IsDigit.asm
+
 include windows.inc
 include user32.inc
 include kernel32.inc
