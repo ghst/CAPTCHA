@@ -10,7 +10,10 @@ Randomize Proc	;		in: <none>		out: v_seed = seed
 Randomize EndP
 
 ; === Random === ;
-Random Proc		;		in: eax = range			out: eax = random value
+Random Proc		;		in: stack(0) = range (Int32)			out: eax = random value
+	pop [v_retAddr]
+	pop eax
+	
 	push ebx
 	push edx
 	xchg ebx, eax
@@ -23,5 +26,7 @@ Random Proc		;		in: eax = range			out: eax = random value
     xchg edx, eax
     pop edx
     pop ebx
+    
+    push [v_retAddr]
 	ret
 Random EndP

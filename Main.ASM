@@ -1,19 +1,36 @@
-.586P
+.686P
 .MMX
 .model flat, stdcall
 
-include Main.inc
+include Inc/Main.inc
 
 .data
 	message		db	"Hi", 0
 	caption		db 	"Imma program", 0
 	
+	; === Global (v) === ;
+	v_retAddr	dd	0
+	
 	; === Perceptron === ;
-	v_W			dw	0
-	v_H			dw	0
-	v_PLimit	equ	500
-	v_We		dt	32*64*10 dup(0)
+	v_N			EQU	10				; neurons amount
+	v_dtSize	EQU	10				; sizeof(dt)
+	v_NDT		EQU	v_N * v_dtSize
+	v_PLimit	EQU	500				; pictures amount / 2
+	v_W			EQU	6
+	v_H			EQU	12
+	v_WH		EQU	v_W * v_H
+	v_WHF		EQU	v_W * v_H * v_dtSize
+	ALIGN 16
+	v_We		db	v_W * v_H * v_dtSize * v_N dup(0)
+	ALIGN 16
+	v_X			db	v_W * v_H * v_dtSize dup(0)
+	ALIGN 16
+	v_Probs		db	v_dtSize * v_N dup(0)
+	ALIGN 16
+	v_Etalon	db	v_dtSize * v_N dup(0)
 	v_tmpDD		dd	0
+	v_D			dt	0.0
+	v_Eps		dt	0.001
 	
 	; === SimpleParser === ;
 	v_ERROR		db	0
@@ -50,16 +67,20 @@ v_argSearch:
 	; TODO: proper command line parser ;
 	
 	; === Set v_W and v_H === ;			in: eax = addr of string		out: v_W = width, v_H = height
-	mov eax, offset v_tmp		; DEBUG
-	call SimpleParser
-	mov ax, [v_Number]
-	mov [v_H], ax
-	mov eax, [v_newAddr]
-	call SimpleParser
-	mov ax, [v_Number]
-	mov [v_W], ax
+	;push dword ptr offset v_tmp		; DEBUG
+	;call SimpleParser
+	;
+	;mov ax, [v_Number]
+	;mov [v_H], ax
+	;
+	;push dword ptr [v_newAddr]
+	;call SimpleParser
+	;
+	;mov ax, [v_Number]
+	;mov [v_W], ax
 	; === End === ;
 
+	call Recognize
 	invoke MessageBoxA, 0, addr message, addr caption, MB_OK
 	jmp v_EXIT
 

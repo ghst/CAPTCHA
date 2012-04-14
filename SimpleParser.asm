@@ -2,6 +2,8 @@
 
 ; === Parse values contained into string. Stop-symbols is ' ' or #13 === ;			in: eax = addr of string		out: v_Number = number, v_newAddr = addr to first symbol AFTER stop-symbol, v_ERROR = Did error happen?
 SimpleParser proc
+	pop [v_retAddr]
+	pop eax
 	pushad
 	mov [v_ERROR], 0
 	xor ecx, ecx
@@ -60,5 +62,6 @@ v_errorSP:
 v_quitSP:
 	mov [v_Number], bx
 	popad
+	push [v_retAddr]
 	ret
 SimpleParser endp
